@@ -25,6 +25,11 @@ public:
 
 	int removeDuplicates2(vector<int>& nums)
 	{
+		if (nums.size() == 0)
+		{
+			return 0;
+		}
+
 		auto index = nums.begin();
 		for (auto iter = nums.begin() + 1; iter != nums.end(); ++iter)
 		{
@@ -38,6 +43,11 @@ public:
 
 	int removeDuplicates3(vector<int>& nums)
 	{
+		if (nums.size() == 0)
+		{
+			return 0;
+		}
+		
 		int index = 0;
 		for (int i = 1; i < nums.size(); ++i)
 		{
