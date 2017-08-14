@@ -1,2 +1,2 @@
-# LeetCode
-The solution about algorithm in LeetCode
+# algorithm
+The solution about algorithm in some book and website.
