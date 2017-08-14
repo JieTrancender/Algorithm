@@ -454,3 +454,90 @@ void FindPath(BinaryTreeNode* pRoot, int expectedSum, std::vector<int>& path, in
 	//delete current node before go back previous node
 	path.pop_back();
 }
+
+//二叉搜索树与双向链表
+void ConvertNode(BinaryTreeNode *pNode, BinaryTreeNode **pLastNodeInList);
+
+BinaryTreeNode* Convert(BinaryTreeNode *pRootOfTree)
+{
+	if (pRootOfTree == nullptr)
+	{
+		return nullptr;
+	}
+
+	BinaryTreeNode *pLastNodeInList = nullptr;
+	ConvertNode(pRootOfTree, &pLastNodeInList);
+
+	BinaryTreeNode *pHeadOfList = pLastNodeInList;
+	while (pHeadOfList != nullptr && pHeadOfList->m_pLeft != nullptr)
+	{
+		pHeadOfList = pHeadOfList->m_pLeft;
+	}
+
+	return pHeadOfList;
+}
+
+void ConvertNode(BinaryTreeNode *pNode, BinaryTreeNode **pLastNodeInList)
+{
+	if (pNode == nullptr || pLastNodeInList == nullptr)
+	{
+		return;
+	}
+
+	BinaryTreeNode *pCurrent = pNode;
+
+	if (pCurrent->m_pLeft != nullptr)
+	{
+		ConvertNode(pCurrent->m_pLeft, pLastNodeInList);
+	}
+
+	pCurrent->m_pLeft = *pLastNodeInList;
+	if (*pLastNodeInList != nullptr)
+	{
+		(*pLastNodeInList)->m_pRight = pCurrent;
+	}
+
+	*pLastNodeInList = pCurrent;
+	if (pCurrent->m_pRight != nullptr)
+	{
+		ConvertNode(pCurrent->m_pRight, pLastNodeInList);
+	}
+}
+
+void ConvertNode1(BinaryTreeNode *pNode, BinaryTreeNode **pLastNodeInList)
+{
+	if (pNode == nullptr || pLastNodeInList == nullptr)
+	{
+		return;
+	}
+
+	BinaryTreeNode *pCurrent = pNode;
+	if (pCurrent->m_pLeft != nullptr)
+	{
+		ConvertNode(pCurrent->m_pLeft, pLastNodeInList);
+	}
+
+	pCurrent->m_pLeft = *pLastNodeInList;
+	if ((*pLastNodeInList) != nullptr)
+	{
+		(*pLastNodeInList)->m_pRight = pCurrent;
+	}
+
+	(*pLastNodeInList) = pCurrent;
+	if (pCurrent->m_pRight != nullptr)
+	{
+		ConvertNode(pCurrent->m_pRight, pLastNodeInList);
+	}
+}
+
+void PrintTreeList(BinaryTreeNode *pRoot)
+{
+	BinaryTreeNode *pNode = pRoot;
+
+	while (pNode)
+	{
+		printf("%d ", pNode->m_nValue);
+		pNode = pNode->m_pRight;
+	}
+	printf("\n");
+}

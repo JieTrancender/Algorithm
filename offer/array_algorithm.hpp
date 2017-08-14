@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <algorithm>
+#include <set>
+#include <functional>
 
 //二维数组中查询元素
 bool Find(int* matrix, int rows, int columns, int number)
@@ -248,5 +250,310 @@ void Reorder(int* data, int length, bool(*func)(int))
 			//*index1 = *index2;
 			//*index2 = temp;
 		}
+	}
+}
+
+bool g_inputInvalid = false;
+int Partition2(int *nums, int n, int start, int end);
+int MoreThanHalfNum(int *nums, int length)
+{
+	if (nums == nullptr || length <= 0)
+	{
+		g_inputInvalid = true;
+		return -1;
+	}
+
+	int middle = length >> 1;
+	int start = 0;
+	int end = length - 1;
+	int index = Partition2(nums, length, start, end);
+	while (index != middle)
+	{
+		if (index > middle)
+		{
+			end = index - 1;
+			index = Partition2(nums, length, start, end);
+		}
+	}
+	return index;
+}
+
+bool g_inputInvalid2 = false;
+bool CheckMoreThanHalf(int *nums, int length, int num);
+int MoreThanHalfNum2(int *nums, int length)
+{
+	if (nums == nullptr || length <= 0)
+	{
+		g_inputInvalid2 = true;
+		return -1;
+	}
+
+	int result = nums[0];
+	int times = 1;
+	for (int i = 1; i < length; ++i)
+	{
+		if (times == 0)
+		{
+			result = nums[i];
+			times = 1;
+		}
+		else if (nums[i] == result)
+		{
+			++times;
+		}
+		else
+		{
+			--times;
+		}
+	}
+
+	if (!CheckMoreThanHalf(nums, length, result))
+	{
+		g_inputInvalid2 = true;
+	}
+
+	return result;
+}
+
+bool CheckMoreThanHalf(int *nums, int length, int num)
+{
+	int times = 0;
+	for (int i = 0; i < length; ++i)
+	{
+		if (nums[i] == num)
+		{
+			++times;
+		}
+	}
+
+	bool isMoreThanHalf = true;
+	if (times * 2 <= length)
+	{
+		isMoreThanHalf = false;
+	}
+
+	return isMoreThanHalf;
+}
+
+int Partition2(int *data, int length, int start, int end)
+{
+	if (data == nullptr || length <= 0 || start < 0 || end >= length)
+	{
+		throw new std::exception("invalid params.");
+	}
+
+	int index = 0;
+	std::swap(data[index], data[end]);
+
+	int small = start - 1;
+	for (index = start; index < end; ++index)
+	{
+		if (data[index] < data[end])
+		{
+			++small;
+			if (small != index)
+			{
+				std::swap(data[index], data[small]);
+			}
+		}
+	}
+
+	++small;
+	std::swap(data[small], data[end]);
+
+	return small;
+}
+
+void GetLeastNums(int *nums, int n, int *result, int k)
+{
+	if (nums == nullptr || result == nullptr || k > n || n <= 0 || k <= 0)
+	{
+		return;
+	}
+
+	int start = 0;
+	int end = n - 1;
+	int index = Partition2(nums, n, start, end);
+	while (index != k - 1)
+	{
+		if (index > k - 1)
+		{
+			end = index - 1;
+			index = Partition2(nums, n, start, end);
+		}
+		else
+		{
+			start = index + 1;
+			index = Partition2(nums, n, start, end);
+		}
+	}
+
+	for (int i = 0; i < k; ++i)
+	{
+		result[i] = nums[i];
+	}
+}
+
+typedef std::multiset<int, std::greater<int>> intSet;
+typedef std::multiset<int, std::greater<int>>::iterator setIterator;
+
+void GetLeastNums2(const std::vector<int>& data, intSet& leastNums, int k)
+{
+	leastNums.clear();
+
+	if (k < 1 || data.size() < k)
+	{
+		return;
+	}
+
+	std::vector<int>::const_iterator iter = data.begin();
+	for (; iter != data.end(); ++iter)
+	{
+		if ((leastNums.size()) < k)
+		{
+			leastNums.insert(*iter);
+		}
+		else
+		{
+			setIterator iterGreatest = leastNums.begin();
+			if (*iter < *(leastNums.begin()))
+			{
+				leastNums.erase(iterGreatest);
+				leastNums.insert(*iter);
+			}
+		}
+	}
+}
+
+bool g_invalidInput3 = false;
+int FindGreatestSumOfSubArray(int *nums, int nLength)
+{
+	if (nums == nullptr || nLength < 0)
+	{
+		g_invalidInput3 = true;
+		return 0;
+	}
+
+	g_invalidInput3 = false;
+
+	int nCurSum = 0;
+	int nGreatestSum = 0x80000000;  //随机取一个比较小的数
+	for (int i = 0; i < nLength; ++i)
+	{
+		if (nCurSum <= 0)
+		{
+			nCurSum = nums[i];
+		}
+		else
+		{
+			nCurSum += nums[i];
+		}
+
+		if (nCurSum > nGreatestSum)
+		{
+			nGreatestSum = nCurSum;
+		}
+	}
+
+	return nGreatestSum;
+}
+
+bool g_invalidInput4 = false;
+int FindGreatestSumOfSubArray2(int *nums, int nLength)
+{
+	if (nums == nullptr | nLength <= 0)
+	{
+		g_invalidInput4 = true;
+		return -1;
+	}
+
+	g_invalidInput4 = false;
+	int result = 0x80000000;
+	int sum = 0;
+	for (int i = 0; i < nLength; ++i)
+	{
+		if (sum <= 0)
+		{
+			sum = nums[i];
+		}
+		else
+		{
+			sum += nums[i];
+		}
+
+		if (sum > result)
+		{
+			result = sum;
+		}
+	}
+
+	return result;
+}
+
+// no finished
+int NumberOf1(const char *strN);
+int NumberOf1Between1AndN(int n)
+{
+	if (n <= 0)
+	{
+		return 0;
+	}
+
+	char strN[50];
+	sprintf(strN, "%d", n);
+
+	return NumberOf1(strN);
+}
+
+// no finished
+int NumberOf1(const char *strN)
+{
+	if (strN == nullptr || *strN < '0' || *strN > '9' || *strN == '\0')
+	{
+		return 0;
+	}
+
+	int first = *strN - '0';
+	unsigned int length = static_cast<unsigned int>(strlen(strN));
+
+	if (length == 1 && first == 0)
+	{
+		return 0;
+	}
+
+	if (length == 1 && first > 0)
+	{
+		return 1;
+	}
+
+	int numFirstDigit = 0;
+	if (first > 1)
+	{
+		//numFirstDigit = PowerBase10(length - 1);
+	}
+	else if (first == 1)
+	{
+		numFirstDigit = atoi(strN + 1) + 1;
+	}
+}
+
+// 把数组排成最小的数
+const int g_maxNumberLength = 10;
+
+char *g_strCombine1 = new char[g_maxNumberLength * 2 + 1];
+char *g_strCombine2 = new char[g_maxNumberLength * 2 + 1];
+
+// no finished
+void PrintMinNumber(int *nums, int nLength)
+{
+	if (nums == nullptr || nLength <= 0)
+	{
+		return;
+	}
+
+	char **strNums = reinterpret_cast<char**>(new int[length]);
+	for (int i = 0; i < nLength; ++i)
+	{
+
 	}
 }
